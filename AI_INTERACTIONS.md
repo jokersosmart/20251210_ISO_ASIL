@@ -276,3 +276,121 @@
 - 所有決策已整合到規格文檔
 - v1.1.0 版本已發佈
 - 完整追蹤鏈已建立（Q&A → SG → FSR → TSR → HSR/SSR）
+
+### 2025年12月2日 - Session 7 - 實現計劃與 SEooC 規格
+
+- 用戶請求：根據 SEooC 假設使用情境開發；無具體需求時假設一個使用情境
+- AI 回應：實施 /speckit.plan 工作流，生成完整的規格建立和實現計劃
+
+**工作流過程**:
+
+**第 1 部分：需求評估和 SEooC 框架掃描**
+1. 確認無現有需求（specs 目錄不存在）
+2. 掃描 SEooC 框架文檔（模板 + 實施指南）
+3. 確認可基於澄清工作坊決策構建假設需求
+
+**假設的 SEooC 使用情景**:
+`
+應用環境: 車載 PCIe Gen5 NVMe SSD（12V 供電）
+故障模式:
+  ├─ 瞬間掉電 (冷啟動 ~50ms)
+  ├─ 時鐘故障 (PLL 失鎖)
+  └─ 記憶體故障 (位元翻轉)
+
+安全目標: 防止故障導致快閃記憶體資料遺失
+`
+
+**第 2 部分：功能規格生成 (spec.md - 443 行)**
+
+**結構**:
+- 安全目標 (SG): 3 個 (Power, Clock, Memory) - Q1 決策
+- 功能安全需求 (FSR): 4 個 (VDD/CLK/MEM/管理)
+- 系統需求 (SysReq): 2 個 (HW/SW 分配, 故障獨立性)
+- 技術需求 (TSR): 3 個 (硬體監控, ISR, 狀態機)
+
+**澄清決策映射**:
+| Q | 決策 | 規格位置 |
+|---|------|---------|
+| Q1 | Power+Clock+Memory | SG-001/002/003 |
+| Q2 | HW 檢測+預設+SW 管理 | SysReq-001, TSR-001/002/003 |
+| Q3 | SC=100%, BC=100%, DC>90% | Section 6 驗證需求 |
+| Q4 | 獨立故障+DC>90% 降級 | SysReq-002, Section 7 |
+
+**驗收標準範例**:
+- VDD 監控: < 1μs 檢測, 2.7V ±50mV 閾值, 10ms 進入安全狀態
+- 軟體 ISR: < 5μs 執行, 100% 故障識別正確性
+- 覆蓋率: SC=100%, BC=100%, DC>90%, CC≤15
+
+**第 3 部分：實現計劃生成 (plan.md - 614 行)**
+
+**技術背景**:
+`
+Language: C99/C11 (Firmware) + Verilog 2005 (RTL)
+Standards: MISRA C:2012, SystemVerilog Guidelines
+Testing: UVM + pytest + Lizard (complexity)
+Target: PCIe Gen5 SSD ASIC (ARM M4 + FPGA)
+Performance: < 1μs HW detection, < 5ms SW response
+`
+
+**憲法檢查**:
+- ✅ 需求追蹤: SG → FSR → TSR (Principle I)
+- ✅ 驗證策略: UVM + pytest + 覆蓋率分析 (Principle II)
+- ✅ 代碼品質: MISRA C:2012 + SystemVerilog (Principle III)
+- ✅ 版本控制: Branch 001-power-management-safety (Principle IV)
+- ✅ 文檔計劃: SEooC spec + 追蹤矩陣 (Principle V)
+
+**項目結構**:
+- RTL: 3 個監控模組 (power/clock/memory) + safety_manager.v
+- Firmware: 3 個服務 (power/clock/memory) + 安全 FSM
+- 驗證: UVM testbench + pytest 單元測試
+- 檔案計劃: plan.md (✅ 已生成) + research.md (待 Phase 0) + data-model.md (待 Phase 1)
+
+**Phase 0-3 藍圖**:
+- Phase 0 (研究): 2 天 - RTL 複雜度, 測試框架, 覆蓋工具, 故障注入, 模擬精度
+- Phase 1 (設計): 3 天 - 資料模型, API 契約 (3 份), 快速入門
+- Phase 2 (實現): 15 天 - RTL + 固件 + UVM + 測試
+- Phase 3 (驗證): 10 天 - 達成 SC/BC/DC/MISRA C 目標
+
+**複雜度跟蹤**: 8 個架構決策, 每個有技術論證
+
+**第 4 部分：README 生成 (README.md - 301 行)**
+
+**內容**:
+- 專案概述: 3 個安全目標, 雙層架構, 高驗收標準, ASIL-B 合規
+- 完整檔案結構: 需求層級 + 源代碼層級
+- 快速開始: 5+10+15 分鐘逐步指南
+- Q1-Q4 決策回顧: 完整映射到規格
+- 開發流程: Phase 0-3 檢查清單
+- 成功標準: 功能/品質/合規 3 個維度
+
+**成功標準範例**:
+✅ 硬體: < 1μs 檢測, < 2ms 安全狀態進入
+✅ 品質: SC=100%, BC=100%, DC>90%, MISRA C 零關鍵違規
+✅ 合規: ISO 26262 + ASPICE CL3 + 獨立安全評審
+
+**第 5 部分：檔案提交**
+
+**提交 1**: a90a4ba - plan.md (614 行)
+- 技術背景, 憲法檢查, 項目結構, Phase 0-3 藍圖, 風險評估
+
+**提交 2**: ab4dc60 - spec.md (443 行)
+- SG/FSR/SysReq/TSR 完整層級, 驗證需求, ASIL 降級論證, 追蹤矩陣
+
+**提交 3**: 71ecec6 - README.md (301 行)
+- 開發指南, Q1-Q4 映射, 快速開始, 成功標準
+
+**總計**: ~1360 行新需求文檔 + 完整實現計劃
+
+**關鍵成果**:
+✅ 假設的 SEooC 使用情景已建立 (車載 SSD 電源管理安全功能)
+✅ 完整的規格層級已定義 (SG → FSR → SysReq → TSR)
+✅ 所有 Q1-Q4 澄清決策已映射到規格
+✅ 實現計劃已建立 (Phase 0-3, 40 天時間表)
+✅ 所有文檔已版本控制和原子提交
+
+**狀態**: /speckit.plan 工作流完成 ✅
+- 功能規格已建立 (spec.md v1.0.0)
+- 實現計劃已建立 (plan.md v1.0.0)
+- 開發指南已建立 (README.md v1.0.0)
+- 所有澄清決策已整合
+- 待下一步: /speckit.plan Phase 0 研究啟動
