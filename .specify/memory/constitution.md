@@ -3,6 +3,15 @@
 <!-- Target Capability Level: 3 (Established Process) -->
 <!-- Technology: PCIe Gen5, Verilog RTL, UVM Verification, C Firmware -->
 
+## Clarifications
+
+### Session 2025-12-02
+- Q: Team structure and decision authority model? → A: Centralized Technical Authority (Chief Architect makes major decisions; team implements)
+- Q: Escalation process for requirement deviations (coverage waiver, MISRA violation, complexity overage)? → A: Severity-based escalation: ASIL D (Critical Path) requires Chief Architect + PM approval + mandatory RCA; ASIL A-C (Standard) requires Design Lead + RCA; all deviations documented
+- Q: Complexity metric for enforcement? → A: Cyclomatic Complexity (CC): RTL modules ≤10, Firmware functions ≤15; values exceeding threshold require documentation + design review approval
+- Q: Formal interface specification method for system integration testing? → A: Formalized interface contracts with signal specs, protocols, error handling, performance bounds; UVM (HW) + pytest (FW) verification; all normal + boundary cases covered
+- Q: Automotive reliability standards? → A: ISO 26262-1:2018 (Functional Safety) + AEC-Q100 (automotive-grade electronic component testing)
+
 ## Core Principles
 
 ### I. Requirements-Driven Development
@@ -16,7 +25,7 @@ Unit, integration, system, and qualification testing MUST be performed per ASPIC
 **Rationale**: Ensures PCIe Gen5 SSD reliability and ASPICE Level 3 compliance; prevents field failures due to untested code paths.
 
 ### III. Code Quality Non-Negotiables
-Firmware MUST follow MISRA C:2012 coding standard with zero critical static analysis violations. Hardware RTL MUST follow SystemVerilog coding guidelines with zero critical lint warnings. All code MUST undergo peer review before integration. Design reviews at module and chip level REQUIRED. Low complexity enforcement mandated.
+Firmware MUST follow MISRA C:2012 coding standard with zero critical static analysis violations. Hardware RTL MUST follow SystemVerilog coding guidelines with zero critical lint warnings. All code MUST undergo peer review before integration. Design reviews at module and chip level REQUIRED. Low complexity enforcement mandated via Cyclomatic Complexity limits: RTL modules ≤CC 10, firmware functions ≤CC 15. Deviations require documented justification and design review approval.
 
 **Rationale**: SSD controllers handle critical storage I/O; coding defects cause data loss; ASPICE HWE.3, SWE.3 require disciplined implementation practices.
 
@@ -38,7 +47,7 @@ Standardized templates required for all ASPICE work products (requirements specs
 **Testing**: UVM testbench, pytest/C unit tests, ASPICE compliance audits  
 **Target Platform**: PCIe Gen5 SSD Controller (FPGA/ASIC)  
 **Performance Goals**: 32 GT/s link speed, <10μs latency (critical path), 100% PCIe spec compliance  
-**Constraints**: Zero critical defects at release; automotive reliability standards; thermal/power budgets per SYS.2  
+**Constraints**: Zero critical defects at release; ISO 26262-1:2018 + AEC-Q100 automotive reliability standards; thermal/power budgets per SYS.2  
 **Scale/Scope**: Hardware: ~50-100K gates, Firmware: ~20-50K LOC, Verification: 500+ tests
 
 ## Development Workflow & Quality Gates
@@ -53,14 +62,16 @@ Standardized templates required for all ASPICE work products (requirements specs
 ### Code Review Requirements
 - MANDATORY peer review on all code (RTL and firmware)
 - MISRA C:2012 compliance verified in firmware reviews
-- SystemVerilog naming and complexity guidelines enforced
+- SystemVerilog naming and Cyclomatic Complexity guidelines enforced (RTL ≤CC 10, Firmware ≤CC 15)
 - Coverage gaps must be explained (not waived)
+- Complexity deviations must include justified rationale and design review approval
 - Review checklist includes traceability verification
 
 ### Testing Gates
 - Unit tests MUST exist and PASS before implementation commit
 - Coverage reports MUST accompany pull requests
-- Integration tests MUST verify documented interfaces
+- Integration tests MUST verify formalized interface contracts (signal specifications, protocols, error handling, performance bounds) via UVM (hardware) and pytest/simulation framework (firmware)
+- All normal and boundary-case scenarios for each interface MUST be covered
 - Regression tests MUST pass on all changes
 - Static analysis MUST show zero critical violations
 
@@ -111,9 +122,10 @@ Standardized templates required for all ASPICE work products (requirements specs
 
 **Amendment Process**: 
 - Proposed amendments MUST document: rationale, affected process areas, migration plan, version impact
-- Amendments require documented approval from technical lead and project manager
+- Amendments require documented approval from Chief Architect (technical authority per clarification) and project manager
 - All changes tracked with version bump and amendment date
 - Transitional period defined (minimum 2 weeks) before new rule enforcement
+- Requirement deviations (coverage waiver, MISRA violation, complexity overage) escalated per severity-based process: ASIL D requires Chief Architect + PM + RCA; ASIL A-C requires Design Lead + RCA
 
 **Version Semantics**:
 - **MAJOR**: Backward-incompatible principle removals/redefinitions (e.g., coverage requirements changed, new ASPICE area added)
@@ -130,4 +142,4 @@ Standardized templates required for all ASPICE work products (requirements specs
 
 ---
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-02 | **Last Amended**: 2025-12-02
+**Version**: 1.1.0 | **Ratified**: 2025-12-02 | **Last Amended**: 2025-12-02 | **Clarified**: 2025-12-02
