@@ -86,14 +86,14 @@ Setup → Foundational → US1, US2 (並行) → US3, US4 (並行)
 
 ### 2.1 硬體抽象層 (HAL) 實現
 
-- [ ] T007 創建中斷向量表和異常處理程序
+- [X] T007 創建中斷向量表和異常處理程序
   - 位置：[firmware/src/hal/interrupt_handler.c](../../../firmware/src/hal/interrupt_handler.c)
   - 驗收標準：
     - 文件包含 fault_isr_entry() 入口函數
     - 支持 3 個故障源 (VDD_ISR, CLK_ISR, MEM_ISR)
     - 中斷延遲 < 5μs (根據 TSR-002)
 
-- [ ] T008 [P] 實現電源控制 API (power_init, power_get_status, power_enter_safe_state)
+- [X] T008 [P] 實現電源控制 API (power_init, power_get_status, power_enter_safe_state)
   - 位置：[firmware/src/hal/power_api.c](../../../firmware/src/hal/power_api.c)
   - 驗收標準：
     - 3 個公開函數已實現
@@ -102,14 +102,14 @@ Setup → Foundational → US1, US2 (並行) → US3, US4 (並行)
 
 ### 2.2 共享數據結構和類型定義
 
-- [ ] T009 定義安全狀態標誌和故障代碼枚舉
+- [X] T009 定義安全狀態標誌和故障代碼枚舉
   - 位置：[firmware/include/safety_types.h](../../../firmware/include/safety_types.h)
   - 驗收標準：
     - 包含 safety_status_t, fault_statistics_t, recovery_config_t 結構
     - 包含 fault_type_t 和 recovery_result_t 枚舉
     - 所有標誌使用 volatile 聲明
 
-- [ ] T010 [P] 實現故障狀態機框架 (初始化、狀態轉遷、查詢接口)
+- [X] T010 [P] 實現故障狀態機框架 (初始化、狀態轉遷、查詢接口)
   - 位置：[firmware/src/safety/safety_fsm.c](../../../firmware/src/safety/safety_fsm.c)
   - 驗收標準：
     - 包含 fsm_init(), fsm_transition(), fsm_get_state() 函數
@@ -118,14 +118,14 @@ Setup → Foundational → US1, US2 (並行) → US3, US4 (並行)
 
 ### 2.3 故障聚合和統計
 
-- [ ] T011 實現故障標誌聚合邏輯
+- [X] T011 實現故障標誌聚合邏輯
   - 位置：[firmware/src/safety/fault_aggregator.c](../../../firmware/src/safety/fault_aggregator.c)
   - 驗收標準：
     - fault_aggregate() 函數支持聚合 3 個故障源
     - 優先級處理已定義
     - 無競態條件（atomic 操作）
 
-- [ ] T012 [P] 實現故障統計收集和診斷覆蓋計算
+- [X] T012 [P] 實現故障統計收集和診斷覆蓋計算
   - 位置：[firmware/src/safety/fault_statistics.c](../../../firmware/src/safety/fault_statistics.c)
   - 驗收標準：
     - 支持按故障類型計數
@@ -134,14 +134,14 @@ Setup → Foundational → US1, US2 (並行) → US3, US4 (並行)
 
 ### 2.4 基礎單元測試
 
-- [ ] T013 為狀態機框架編寫單元測試
+- [X] T013 為狀態機框架編寫單元測試
   - 位置：[firmware/tests/unit/test_safety_fsm.py](../../../firmware/tests/unit/test_safety_fsm.py)
   - 驗收標準：
     - 25 個測試用例覆蓋所有狀態轉遷
     - SC ≥ 100%, BC ≥ 100%
     - 所有測試通過
 
-- [ ] T014 [P] 為故障聚合邏輯編寫單元測試
+- [X] T014 [P] 為故障聚合邏輯編寫單元測試
   - 位置：[firmware/tests/unit/test_fault_aggregator.py](../../../firmware/tests/unit/test_fault_aggregator.py)
   - 驗收標準：
     - 15 個測試用例覆蓋所有故障組合 (3! = 6 個組合 × 2.5)
