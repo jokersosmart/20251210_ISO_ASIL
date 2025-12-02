@@ -164,7 +164,7 @@ Setup → Foundational → US1, US2 (並行) → US3, US4 (並行)
 
 ### 3.1 硬體 VDD 監控電路 (RTL)
 
-- [ ] T015 [P] 實現 VDD 監控比較器和濾波電路 (rc_filter, comparator_wrapper)
+- [X] T015 [P] 實現 VDD 監控比較器和濾波電路 (rc_filter, comparator_wrapper)
   - 位置：[rtl/power_monitor/comparator.v](../../../rtl/power_monitor/comparator.v)
   - 驗收標準：
     - 基準電壓 1.35V (對應 2.7V VDD)
@@ -172,7 +172,7 @@ Setup → Foundational → US1, US2 (並行) → US3, US4 (並行)
     - RC 截止頻率 ~16kHz (根據 research.md Task 5)
     - 檢測延遲 < 50ns
 
-- [ ] T016 [P] 實現 VDD 監控狀態機 (voltage level detection, fault flag generation)
+- [X] T016 [P] 實現 VDD 監控狀態機 (voltage level detection, fault flag generation)
   - 位置：[rtl/power_monitor/vdd_monitor.v](../../../rtl/power_monitor/vdd_monitor.v)
   - 驗收標準：
     - VDD 連續監控
@@ -180,7 +180,7 @@ Setup → Foundational → US1, US2 (並行) → US3, US4 (並行)
     - FAULT_VDD 輸出延遲 < 1μs
     - 複雜度 CC ≤ 10
 
-- [ ] T017 [P] 實現電源時序控制器 (power sequencing, soft/hard reset)
+- [X] T017 [P] 實現電源時序控制器 (power sequencing, soft/hard reset)
   - 位置：[rtl/power_monitor/supply_sequencer.v](../../../rtl/power_monitor/supply_sequencer.v)
   - 驗收標準：
     - 支持 3 階段電源上升：1V → 2V → 3.3V
@@ -189,7 +189,7 @@ Setup → Foundational → US1, US2 (並行) → US3, US4 (並行)
 
 ### 3.2 軟體電源監控服務
 
-- [ ] T018 [P] 實現電源監控任務 (power monitoring ISR)
+- [X] T018 [P] 實現電源監控任務 (power monitoring ISR)
   - 位置：[firmware/src/power/pwr_event_handler.c](../../../firmware/src/power/pwr_event_handler.c)
   - 驗收標準：
     - 在 VDD_FAULT 中斷上觸發
@@ -197,7 +197,7 @@ Setup → Foundational → US1, US2 (並行) → US3, US4 (並行)
     - 設置 fault_flags.pwr_fault
     - 可重入 (支援多個同時中斷)
 
-- [ ] T019 [P] 實現電源狀態機和恢復邏輯
+- [X] T019 [P] 實現電源狀態機和恢復邏輯
   - 位置：[firmware/src/power/pwr_monitor_service.c](../../../firmware/src/power/pwr_monitor_service.c)
   - 驗收標準：
     - pwr_service_init() 初始化
